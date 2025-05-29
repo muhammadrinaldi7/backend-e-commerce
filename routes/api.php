@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoriesController;
 use App\Http\Controllers\Api\OrdersController;
+use App\Http\Controllers\Api\PaymentsController;
 use App\Http\Controllers\Api\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,5 +33,7 @@ Route::delete('/delete-gallery/{id}', [ProductsController::class, 'deleteGallery
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductsController::class)->except(['index', 'show']);
     Route::apiResource('categories', CategoriesController::class)->except(['index']);
+    Route::apiResource('payments', PaymentsController::class);
+    Route::post('/xendit-callback', [PaymentsController::class, 'callback']);
 });
 Route::apiResource('orders', OrdersController::class)->middleware('auth:sanctum')->only(['index', 'store', 'show']);
