@@ -7,60 +7,189 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+# 🛒 Sistem Backend API E-commerce
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+**Technical Test – ZedGroup**
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Sistem Backend RESTful API untuk e-commerce yang mendukung manajemen produk, kategori, autentikasi pengguna, role-based access (user & admin), integrasi dengan Xendit untuk pembayaran, dan pengelolaan galeri gambar produk.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🚀 Fitur Utama
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+-   🔐 **Autentikasi & Role-Based Access**
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+    -   Register, Login, Logout (Sanctum)
+    -   Promote user to admin
+    -   Upload avatar pengguna
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+-   🛍️ **Manajemen Produk & Kategori (Admin)**
 
-## Laravel Sponsors
+    -   Tambah, ubah, hapus produk & kategori
+    -   Upload gambar produk utama & galeri produk
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+-   📦 **Katalog Produk (User)**
 
-### Premium Partners
+    -   List produk dengan filter berdasarkan nama & kategori
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+-   💸 **Integrasi Xendit**
 
-## Contributing
+    -   Buat invoice pembayaran
+    -   Webhook untuk update status pembayaran & stok otomatis
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+-   ✅ **CI/CD dengan GitHub Actions**
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## ⚙️ Requirements
 
-## Security Vulnerabilities
+-   PHP >= 8.2
+-   Composer
+-   MySQL / MariaDB
+-   Laravel 12
+-   Laravel Sanctum
+-   Xendit PHP SDK
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 📂 Struktur Folder
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    ├── app/
+    │   ├── Http/
+    │   │   ├── Controllers/
+    │   │   │  └── Api/
+    │   │   │   ├── AuthController.php
+    │   │   │   ├── CategoriesController.php
+    │   │   │   ├── OrdersController.php
+    │   │   │   ├── PaymentsController.php
+    │   │   │   └── ProductController.php
+    │   │   │
+    │   │   └── Middleware/
+    │   │       └── Authenticate.php
+    │   │
+    │   ├── Models/
+    │   │     ├── Category.php
+    │   │     ├── Detail_order.php
+    │   │     ├── Order.php
+    │   │     ├── Payment.php
+    │   │     ├── Product.php
+    │   │     └── User.php
+    │   │
+    │   ├── Traits/
+    │       └── CheckAdmin.php
+    │       └── HasUuid.php
+    │
+    ├── routes/
+    │   └── api.php
+    ├── database/
+    │   ├── migrations/
+    │   ├── seeders/
+    │
+    └── ...
+
+---
+
+## 📫 Endpoint Dokumentasi API
+
+### 🧑‍💼 Auth
+
+| Method | Endpoint                   | Deskripsi                     | Auth     |
+| ------ | -------------------------- | ----------------------------- | -------- |
+| POST   | /api/register              | Register user + upload avatar | ❌       |
+| POST   | /api/login                 | Login user                    | ❌       |
+| POST   | /api/logout                | Logout user                   | ✅       |
+| POST   | /api/promote-to-admin/{id} | Promote user menjadi admin    | ✅ Admin |
+
+### 🛍️ Produk
+
+| Method | Endpoint                             | Deskripsi                          | Auth      |
+| ------ | ------------------------------------ | ---------------------------------- | --------- |
+| GET    | /api/products                        | List semua produk                  | ❌ Public |
+| POST   | /api/products                        | Tambah produk baru                 | ✅ Admin  |
+| PUT    | /api/products/{id}                   | Update produk                      | ✅ Admin  |
+| DELETE | /api/products/{id}                   | Hapus produk                       | ✅ Admin  |
+| GET    | /api/products/category/{category_id} | Filter produk berdasarkan kategori | ❌ Public |
+
+### 📂 Galeri Produk
+
+| Method | Endpoint                         | Deskripsi                               | Auth     |
+| ------ | -------------------------------- | --------------------------------------- | -------- |
+| POST   | /api/add-gallery/{product_id}    | Upload beberapa gambar produk (gallery) | ✅ Admin |
+| DELETE | /api/delete-gallery/{product_id} | Hapus semua gallery produk              | ✅ Admin |
+| GET    | /api/get-gallery/{product_id}    | Lihat semua gambar galeri produk        | ✅ User  |
+
+### 📚 Kategori
+
+| Method | Endpoint             | Deskripsi           | Auth      |
+| ------ | -------------------- | ------------------- | --------- |
+| GET    | /api/categories      | List semua kategori | ❌ Public |
+| POST   | /api/categories      | Tambah kategori     | ✅ Admin  |
+| DELETE | /api/categories/{id} | Hapus kategori      | ✅ Admin  |
+
+### 🧾 Order
+
+| Method | Endpoint         | Deskripsi              | Auth     |
+| ------ | ---------------- | ---------------------- | -------- |
+| POST   | /api/orders      | Buat order             | ✅ User  |
+| GET    | /api/orders      | Lihat semua order user | ✅ User  |
+| PUT    | /api/orders/{id} | Update status order    | ✅ Admin |
+| DELETE | /api/orders/{id} | Hapus order            | ✅ Admin |
+
+### 💸 Pembayaran
+
+| Method | Endpoint            | Deskripsi                        | Auth      |
+| ------ | ------------------- | -------------------------------- | --------- |
+| POST   | /api/payments       | Buat invoice pembayaran (Xendit) | ✅        |
+| POST   | /api/webhook/xendit | Webhook callback dari Xendit     | 🔐 Server |
+
+---
+
+## 🛠️ Instalasi & Setup
+
+```bash
+git clone https://github.com/muhammadrinaldi7/backend-e-commerce.git
+cd backend-e-commerce
+
+# Install dependensi
+composer install
+
+# Duplikat file .env dan generate app key
+cp .env
+php artisan key:generate
+
+# Setup database di file .env
+
+# Migrasi & seed data
+php artisan migrate --seed
+
+# Jalankan server
+php artisan serve
+
+## 📌 Catatan
+
+* Menggunakan Laravel Sanctum untuk autentikasi token.
+* Endpoint yang butuh autentikasi dilindungi oleh middleware `auth:sanctum`.
+* Gambar avatar dan produk disimpan di `storage/app/public/images`.
+* Galeri mendukung multiple upload menggunakan array.
+
+---
+
+## ✅ CI/CD
+
+* Menggunakan **GitHub Actions** untuk:
+
+  * PHPUnit testing (via php artisan test)
+  * Deploy otomatis ke shared hosting
+
+---
+
+## 👨‍💻 Kontributor
+
+* Muhammad Rinaldi
+
+---
+
+## 📄 Lisensi
+
+MIT © 2025 Muhammad Rinaldi
+```

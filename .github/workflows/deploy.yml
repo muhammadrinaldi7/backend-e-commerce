@@ -32,7 +32,11 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
 
-      # 4. Upload Laravel Core (Kecuali `public/`) ke root hosting
+      # 4. PHP Unit Test
+      - name: PHP Unit Test
+        run: php artisan test
+
+      # 5. Upload Laravel Core (Kecuali `public/`) ke root hosting
       - name: Upload Laravel Core to Hosting Root
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
