@@ -69,7 +69,11 @@ class ProductsController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $product = Product::with('category')->find($id);
+        if (!$product) {
+            return ResponseHelper::error('Product not found', 404);
+        }
+        return ResponseHelper::success($product, 'Product retrieved successfully', 200);
     }
 
     /**
@@ -137,7 +141,14 @@ class ProductsController extends Controller
         if ($product->image_product && Storage::disk('public')->exists($product->image_product)) {
             Storage::disk('public')->delete($product->image_product);
         }
-    
+        if ($product->gallery_product) {
+            $gallery = json_decode($product->gallery_product, true);
+            foreach ($gallery as $image) {
+                if (Storage::disk('public')->exists($image)) {
+                    Storage::disk('public')->delete($image);
+                }
+            }
+        }
         $product->delete();
     
         return ResponseHelper::success(null, 'Product deleted successfully', 200);
@@ -167,6 +178,7 @@ class ProductsController extends Controller
         $product->save();
         return ResponseHelper::success($product, 'Gallery updated successfully', 200);
     }
+
     public function deleteGallery(string $id)
     {
         if($error = $this->checkIfAdmin()) {
@@ -175,6 +187,14 @@ class ProductsController extends Controller
         $product = Product::find($id);
         if (!$product) {
             return ResponseHelper::error('Product not found', 404);
+        }
+        if ($product->gallery_product && Storage::disk('public')->exists($product->gallery_product)) {
+            $gallery = json_decode($product->gallery_product, true);
+            foreach ($gallery as $image) {
+                if (Storage::disk('public')->exists($image)) {
+                    Storage::disk('public')->delete($image);
+                }
+            }
         }
         $product->gallery_product = null;
         $product->save();
@@ -191,5 +211,29 @@ class ProductsController extends Controller
             return ResponseHelper::error('No gallery images found', 404);
         }
         return ResponseHelper::success($gallery, 'Gallery retrieved successfully', 200);
+    }
+
+    public function filterByCategory(Request $request, string $categoryId)
+    {
+        $products = Product::where('category_id', $categoryId)->with('category')->get();
+        if ($products->isEmpty()) {
+            return ResponseHelper::error('No products found for this category', 404);
+        }
+        return ResponseHelper::success($products, 'Products retrieved successfully', 200);
+    }
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+        if (!$query) {
+            return ResponseHelper::error('Query parameter is required', 400);
+        }
+        $products = Product::where('product_name', 'like', '%' . $query . '%')
+            ->orWhere('description', 'like', '%' . $query . '%')
+            ->with('category')
+            ->get();
+        if ($products->isEmpty()) {
+            return ResponseHelper::error('No products found for this search', 404);
+        }
+        return ResponseHelper::success($products, 'Products retrieved successfully', 200);
     }
 }

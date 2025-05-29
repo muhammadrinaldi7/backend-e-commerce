@@ -16,15 +16,19 @@ Route::post('/login', [AuthController::class, 'login']);
 
 // Public routes
 Route::get('/products', [ProductsController::class, 'index']);
+Route::get('/products/{id}', [ProductsController::class, 'show']);
 Route::get('/categories', [CategoriesController::class, 'index']);
+Route::get('/products/category/{id}', [ProductsController::class, 'filterByCategory']);
+Route::get('/products/search', [ProductsController::class, 'search']);
 
 // Admin routes
 Route::post('/promote-to-admin/{id}', [AuthController::class, 'promoteToAdmin'])->middleware('auth:sanctum');
+Route::get('/get-gallery/{id}', [ProductsController::class, 'getGallery'])->middleware('auth:sanctum');
 Route::post('/add-gallery/{id}', [ProductsController::class, 'addGallery'])->middleware('auth:sanctum');
 Route::delete('/delete-gallery/{id}', [ProductsController::class, 'deleteGallery'])->middleware('auth:sanctum');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('products', ProductsController::class)->except(['index']);
+    Route::apiResource('products', ProductsController::class)->except(['index', 'show']);
     Route::apiResource('categories', CategoriesController::class)->except(['index']);
 });
