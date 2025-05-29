@@ -42,13 +42,10 @@ jobs:
           local-dir: ./
           server-dir: /laravel/
           exclude: |
-            public/*
             node_modules/*
             node_modules
             node_modules/**
-            vendor/**
-            vendor/
-            vendor
+
             .git*
             .git/*
             .git/**
