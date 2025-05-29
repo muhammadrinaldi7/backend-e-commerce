@@ -45,7 +45,9 @@ jobs:
             node_modules/*
             node_modules
             node_modules/**
-
+            vendor/**
+            vendor/
+            vendor
             .git*
             .git/*
             .git/**
