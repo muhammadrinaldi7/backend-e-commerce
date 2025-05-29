@@ -34,7 +34,7 @@ jobs:
 
       # 4. PHP Unit Test
       - name: PHP Unit Test
-        run: php artisan test
+        run: vendor/bin/phpunit
 
       # 5. Upload Laravel Core (Kecuali `public/`) ke root hosting
       - name: Upload Laravel Core to Hosting Root
