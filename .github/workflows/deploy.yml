@@ -1,0 +1,63 @@
+name: Deploy Laravel to Shared Hosting
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout Repo
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Setup PHP
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+
+      # 2.5 Cache Composer Dependencies
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      # 3. Install Laravel Dependencies
+      - name: Install Composer Dependencies
+        run: composer install --no-dev --optimize-autoloader
+
+      # 4. Upload Laravel Core (Kecuali `public/`) ke root hosting
+      - name: Upload Laravel Core to Hosting Root
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./
+          server-dir: /laravel/
+          exclude: |
+            public/*
+            node_modules/*
+            node_modules
+            node_modules/**
+            vendor/**
+            vendor/
+            vendor
+            .git*
+            .github/**
+            .github/*
+            .github/
+            test/*
+            test
+            test/**
+            README.md
+            vite.config.js
+            package.json
+            package-lock.json
+            webpack.mix.js
