@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\CategoriesController;
+use App\Http\Controllers\Api\OrdersController;
 use App\Http\Controllers\Api\ProductsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -32,3 +33,4 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductsController::class)->except(['index', 'show']);
     Route::apiResource('categories', CategoriesController::class)->except(['index']);
 });
+Route::apiResource('orders', OrdersController::class)->middleware('auth:sanctum')->only(['index', 'store', 'show']);
