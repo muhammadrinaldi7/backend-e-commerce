@@ -6,7 +6,32 @@ on:
       - main
 
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: 8.2
+
+      - name: Cache Composer dependencies
+        uses: actions/cache@v3
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+          restore-keys: ${{ runner.os }}-composer-
+
+      - name: Install Composer Dependencies (with dev)
+        run: composer install --no-interaction --optimize-autoloader
+
+      - name: Run PHPUnit tests
+        run: vendor/bin/phpunit
+
   deploy:
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
@@ -32,11 +57,7 @@ jobs:
       - name: Install Composer Dependencies
         run: composer install --no-dev --optimize-autoloader
 
-      # 4. PHP Unit Test
-      - name: PHP Unit Test
-        run: vendor/bin/phpunit
-
-      # 5. Upload Laravel Core (Kecuali `public/`) ke root hosting
+      # 4. Upload Laravel Core (Kecuali `public/`) ke root hosting
       - name: Upload Laravel Core to Hosting Root
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:
