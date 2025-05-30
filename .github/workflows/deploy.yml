@@ -27,6 +27,9 @@ jobs:
       - name: Install Composer Dependencies (with dev)
         run: composer install --no-interaction --optimize-autoloader
 
+      - name: Generate APP_KEY
+        run: php artisan key:generate
+
       - name: Run PHPUnit tests
         run: vendor/bin/phpunit
 
