@@ -172,24 +172,25 @@ php artisan serve
 * Gambar avatar dan produk disimpan di `storage/app/public/images`.
 * Galeri mendukung multiple upload menggunakan array.
 
+```
+
 ---
 
 ## ✅ CI/CD
 
-* Menggunakan **GitHub Actions** untuk:
+-   Menggunakan **GitHub Actions** untuk:
 
-  * PHPUnit testing (via php artisan test)
-  * Deploy otomatis ke shared hosting
+    -   PHPUnit testing (via php artisan test)
+    -   Deploy otomatis ke shared hosting
 
 ---
 
 ## 👨‍💻 Kontributor
 
-* Muhammad Rinaldi
+-   Muhammad Rinaldi
 
 ---
 
 ## 📄 Lisensi
 
 MIT © 2025 Muhammad Rinaldi
-```
