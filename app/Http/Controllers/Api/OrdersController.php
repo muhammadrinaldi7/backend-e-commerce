@@ -98,7 +98,12 @@ class OrdersController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $order = Order::find($id);
+        if (!$order) {
+            return ResponseHelper::error('Order not found', 404);
+        }
+        $order->delete();
+        return ResponseHelper::success(null, 'Order deleted successfully', 200);
     }
 
 }
