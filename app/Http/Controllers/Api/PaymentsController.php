@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Xendit\Configuration;
 use Xendit\Invoice\InvoiceApi;
+use Xendit\Invoice\InvoiceCallback;
 
 class PaymentsController extends Controller
 {
@@ -30,6 +31,8 @@ class PaymentsController extends Controller
      */
     public function store(Request $request)
     {
+        Configuration::setXenditKey(env('XENDIT_SECRET_KEY'));
+
         $validasi = Validator::make($request->all(), [
             'order_id' => 'required|exists:orders,id',
         ]);
@@ -37,13 +40,15 @@ class PaymentsController extends Controller
         if ($validasi->fails()) {
             return ResponseHelper::error($validasi->errors(), 422);
         }
-        Configuration::setXenditKey(env('XENDIT_SECRET_KEY'));
-    
-        $order = Order::with(['details', 'user'])->findOrFail($request->order_id);
-    
-        DB::beginTransaction();
-    
-        try {
+        $PayOrder = Order::with('payment')->find($request->order_id);
+
+        if ($PayOrder->payment->payment_status === 'PAID') {
+            return ResponseHelper::error('Order sudah dibayar', 400);
+        }
+
+        $order = Order::with(['details', 'user'])->find($request->order_id);
+        
+      
             // CEK STOK
             foreach ($order->details as $detail) {
                 $product = Product::findOrFail($detail->product_id);
@@ -58,11 +63,11 @@ class PaymentsController extends Controller
             });
     
             $invoiceApi = new InvoiceApi();
-            $externalId = 'invoice-' . $order->id;
+            
     
             $params = [
-                'external_id' => $externalId,
-                'description' => 'Pembayaran untuk order #' . $order->id,
+                'external_id' => 'invoice-' . time(),
+                'description' => 'Pembayaran untuk order#' . $order->id,
                 'amount' => $totalAmount,
                 'invoice_duration' => 3600,
                 'currency' => 'IDR',
@@ -71,7 +76,7 @@ class PaymentsController extends Controller
                     'email' => $order->user->email,
                 ],
             ];
-    
+            try {
             $invoice = $invoiceApi->createInvoice($params);
     
             Payment::create([
@@ -79,10 +84,9 @@ class PaymentsController extends Controller
                 'payment_method' => 'Xendit',
                 'payment_status' => 'PENDING',
                 'payment_date' => now(),
-                'external_id' => $externalId,
+                'external_id' => $invoice['external_id'],
             ]);
     
-            DB::commit();
             $invoiceData = [
                 'invoice_url' => $invoice['invoice_url'],
                 'invoice_id' => $invoice['id'],
@@ -96,19 +100,21 @@ class PaymentsController extends Controller
     
     
     public function callback(Request $request)
-    {
-        $externalId = $request->external_id;
-        $status = $request->status;
-    
-        $payment = Payment::with('order.details')->where('external_id', $externalId)->first();
-    
-        if (!$payment || $status !== 'PAID') {
-            return ResponseHelper::error('Pembayaran tidak ditemukan', 404);
-        }
-    
-        DB::beginTransaction();
-    
-        try {
+    {   
+        $payload = $request->all();
+
+        $invoiceCallback = new InvoiceCallback($payload);
+
+        // $externalId = $request->external_id;
+        // $status = $request->status;
+        if($invoiceCallback->getStatus() === 'PAID'){
+            $externalId = $invoiceCallback->getExternalId();
+            $status = $invoiceCallback->getStatus();
+            $payment = Payment::with('order.details')->where('external_id', $externalId)->first();
+            if($payment){
+                $payment->payment_status = $status;
+                $payment->save();
+            }
             foreach ($payment->order->details as $detail) {
                 $product = Product::findOrFail($detail->product_id);
     
@@ -121,16 +127,38 @@ class PaymentsController extends Controller
                 $product->save();
             }
     
-            $payment->payment_status = 'PAID';
-            $payment->save();
-    
-            DB::commit();
-    
             return ResponseHelper::success(null, 'Pembayaran berhasil', 200);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ResponseHelper::error($e->getMessage(), 500);
         }
+        
+        // if (!$payment || $status !== 'PAID') {
+        //     return ResponseHelper::error('Pembayaran tidak ditemukan', 404);
+        // }
+    
+    
+    
+        // try {
+        //     foreach ($payment->order->details as $detail) {
+        //         $product = Product::findOrFail($detail->product_id);
+    
+        //         // Cek ulang untuk safety
+        //         if ($product->qty < $detail->quantity) {
+        //             return ResponseHelper::error('Stok produk tidak mencukupi', 400);
+        //         }
+    
+        //         $product->qty -= $detail->quantity;
+        //         $product->save();
+        //     }
+    
+        //     $payment->status = 'PAID';
+        //     $payment->save();
+    
+        //     DB::commit();
+    
+        //     return ResponseHelper::success(null, 'Pembayaran berhasil', 200);
+        // } catch (\Exception $e) {
+        //     DB::rollBack();
+        //     return ResponseHelper::error($e->getMessage(), 500);
+        // }
     }
 
     /**

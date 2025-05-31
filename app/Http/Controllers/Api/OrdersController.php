@@ -20,7 +20,7 @@ class OrdersController extends Controller
     {
         $user = Auth::guard('sanctum')->user();
     
-        $orders = Order::with(['details.product']) 
+        $orders = Order::with(['details.product','payment'])
             ->where('user_id', $user->id) 
             ->orderBy('order_date', 'desc')
             ->get();

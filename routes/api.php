@@ -21,7 +21,7 @@ Route::get('/products', [ProductsController::class, 'index']);
 Route::get('/products/{id}', [ProductsController::class, 'show']);
 Route::get('/categories', [CategoriesController::class, 'index']);
 Route::get('/products/category/{id}', [ProductsController::class, 'filterByCategory']);
-Route::get('/products/search', [ProductsController::class, 'search']);
+Route::get('/search/product', [ProductsController::class, 'search']);
 
 // Protected routes not in api resource
 Route::post('/promote-to-admin/{id}', [AuthController::class, 'promoteToAdmin'])->middleware('auth:sanctum');
