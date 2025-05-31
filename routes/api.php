@@ -35,6 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductsController::class)->except(['index', 'show']);
     Route::apiResource('categories', CategoriesController::class)->except(['index']);
     Route::apiResource('payments', PaymentsController::class);
-    Route::apiResource('orders', OrdersController::class)->only(['index', 'store', 'show']);
+    Route::apiResource('orders', OrdersController::class)->only(['index', 'store', 'show', 'destroy']);
 });
 // Route::apiResource('orders', OrdersController::class)->middleware('auth:sanctum')->only(['index', 'store', 'show']);
