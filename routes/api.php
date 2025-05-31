@@ -24,10 +24,12 @@ Route::get('/products/category/{id}', [ProductsController::class, 'filterByCateg
 Route::get('/search/product', [ProductsController::class, 'search']);
 
 // Protected routes not in api resource
+
 Route::post('/promote-to-admin/{id}', [AuthController::class, 'promoteToAdmin'])->middleware('auth:sanctum');
 Route::get('/get-gallery/{id}', [ProductsController::class, 'getGallery'])->middleware('auth:sanctum');
 Route::post('/add-gallery/{id}', [ProductsController::class, 'addGallery'])->middleware('auth:sanctum');
 Route::delete('/delete-gallery/{id}', [ProductsController::class, 'deleteGallery'])->middleware('auth:sanctum');
+Route::put('/update-status-order/{id}', [OrdersController::class, 'updateStatusOrder'])->middleware('auth:sanctum');
 Route::post('/xendit-callback', [PaymentsController::class, 'callback']);
 
 // Protected routes
@@ -35,6 +37,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('products', ProductsController::class)->except(['index', 'show']);
     Route::apiResource('categories', CategoriesController::class)->except(['index']);
     Route::apiResource('payments', PaymentsController::class);
-    Route::apiResource('orders', OrdersController::class)->only(['index', 'store', 'show', 'destroy']);
+    Route::apiResource('orders', OrdersController::class)->only(['index', 'store', 'show', 'update', 'destroy']);
 });
 // Route::apiResource('orders', OrdersController::class)->middleware('auth:sanctum')->only(['index', 'store', 'show']);

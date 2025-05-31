@@ -7,12 +7,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Detail_order;
 use App\Models\Order;
 use App\Models\Product;
+use App\Traits\CheckAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class OrdersController extends Controller
-{
+{   
+    use CheckAdmin;
     /**
      * Display a listing of the resource.
      */
@@ -90,7 +92,7 @@ class OrdersController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        
     }
 
     /**
@@ -106,4 +108,23 @@ class OrdersController extends Controller
         return ResponseHelper::success(null, 'Order deleted successfully', 200);
     }
 
+    public function updateStatusOrder(Request $request, string $id)
+    {   
+        if($error = $this->checkIfAdmin()) {
+            return $error;
+        }
+        $validasi = Validator::make($request->all(), [
+            'status' => 'required|in:pending,processing,shipped,delivered,canceled',
+        ]);
+        if ($validasi->fails()) {
+            return ResponseHelper::error($validasi->errors(), 422);
+        }
+        $order = Order::find($id);
+        if (!$order) {
+            return ResponseHelper::error('Order not found', 404);
+        }
+        $order->status = $request->status;
+        $order->save();
+        return ResponseHelper::success($order, 'Order status updated successfully', 200);
+    }
 }
