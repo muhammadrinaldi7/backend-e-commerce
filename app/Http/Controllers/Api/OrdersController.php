@@ -127,4 +127,14 @@ class OrdersController extends Controller
         $order->save();
         return ResponseHelper::success($order, 'Order status updated successfully', 200);
     }
+
+    public function getAllOrders()
+    {
+        $orders = Order::with('user')->get();
+        if ($orders->isEmpty()) {
+            return ResponseHelper::error('No orders found', 404);
+        }
+
+        return ResponseHelper::success($orders, 'Orders retrieved successfully', 200);
+    }
 }
