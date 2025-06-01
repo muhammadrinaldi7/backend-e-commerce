@@ -32,7 +32,6 @@ Route::get('/all-users', [AuthController::class, 'getAllUsers'])->middleware('au
 Route::post('/add-gallery/{id}', [ProductsController::class, 'addGallery'])->middleware('auth:sanctum');
 Route::delete('/delete-gallery/{id}', [ProductsController::class, 'deleteGallery'])->middleware('auth:sanctum');
 Route::put('/update-status-order/{id}', [OrdersController::class, 'updateStatusOrder'])->middleware('auth:sanctum');
-Route::put('/update-status-order/{id}', [OrdersController::class, 'updateStatusOrder'])->middleware('auth:sanctum');
 Route::get('/get-allOrders', [OrdersController::class, 'getAllOrders'])->middleware('auth:sanctum');
 
 // Protected routes

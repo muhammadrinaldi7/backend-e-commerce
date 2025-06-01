@@ -131,12 +131,16 @@ class ProductsController extends Controller
             return $error;
         }
     
-        $product = Product::find($id);
+        $product = Product::with('detailOrders')->find($id);
     
         if (!$product) {
             return ResponseHelper::error('Product not found', 404);
-        }
+        }   
     
+        if ($product->detailOrders->isNotEmpty()) {
+            return ResponseHelper::error('Product telah ada di transaksi', 422);
+        }
+        
         // Delete the image file if it exists
         if ($product->image_product && Storage::disk('public')->exists($product->image_product)) {
             Storage::disk('public')->delete($product->image_product);
