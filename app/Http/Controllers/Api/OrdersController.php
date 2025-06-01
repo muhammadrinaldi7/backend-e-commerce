@@ -130,7 +130,7 @@ class OrdersController extends Controller
 
     public function getAllOrders()
     {
-        $orders = Order::with('user')->get();
+        $orders = Order::with('user', 'payment')->get();
         if ($orders->isEmpty()) {
             return ResponseHelper::error('No orders found', 404);
         }
