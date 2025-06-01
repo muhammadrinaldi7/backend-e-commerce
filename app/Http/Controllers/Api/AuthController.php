@@ -77,4 +77,11 @@ class AuthController extends Controller
         $user->save();
         return ResponseHelper::success($user, 'User promoted to admin successfully', 201);
     }
+    public function getAllUsers(){
+        $User = User::get();
+        if($User->isEmpty()){
+            return ResponseHelper::error('No users found', 404);
+        }
+        return ResponseHelper::success($User, 'Users retrieved successfully', 200);
+    }
 }
