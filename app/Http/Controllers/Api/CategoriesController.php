@@ -73,9 +73,12 @@ class CategoriesController extends Controller
         if($error = $this->checkIfAdmin()) {
             return $error;
         }
-        $category = Category::find($id);
+        $category = Category::with('products')->find($id);
         if (!$category) {
             return ResponseHelper::error('Category not found', 404);
+        }
+        if ($category->products->count() > 0) {
+            return ResponseHelper::error('Cannot delete category. It still has products.', 400);
         }
         $deleted = $category->delete();
         if($deleted) {
