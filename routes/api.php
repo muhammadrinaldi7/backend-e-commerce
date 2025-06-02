@@ -24,6 +24,7 @@ Route::get('/products/{id}', [ProductsController::class, 'show']);
 Route::get('/categories', [CategoriesController::class, 'index']);
 Route::get('/products/category/{id}', [ProductsController::class, 'filterByCategory']);
 Route::get('/search/product', [ProductsController::class, 'search']);
+Route::get('/getAuth', [AuthController::class, 'getAuthUser']);
 
 // Protected routes not in api resource
 

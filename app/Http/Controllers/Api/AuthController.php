@@ -99,4 +99,12 @@ class AuthController extends Controller
         $user->save();
         return ResponseHelper::success($user, 'Avatar updated successfully', 200);   
     }
+    
+    public function getAuthUser() {
+        $user = Auth::guard('sanctum')->user();
+        if (!$user) {
+            return ResponseHelper::error('User not found', 404);
+        }
+        return ResponseHelper::success($user, 'User retrieved successfully', 200);
+    }
 }
