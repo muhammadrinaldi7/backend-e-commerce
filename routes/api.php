@@ -35,6 +35,7 @@ Route::delete('/delete-gallery/{id}', [ProductsController::class, 'deleteGallery
 Route::put('/update-status-order/{id}', [OrdersController::class, 'updateStatusOrder'])->middleware('auth:sanctum');
 Route::post('/xendit-callback', [PaymentsController::class, 'callback']);
 Route::get('/get-allOrders', [OrdersController::class, 'getAllOrders'])->middleware('auth:sanctum');
+Route::post('/updateAvatar', [AuthController::class, 'updateAvatar'])->middleware('auth:sanctum');
 
 // Protected routes
 Route::middleware('auth:sanctum')->group(function () {

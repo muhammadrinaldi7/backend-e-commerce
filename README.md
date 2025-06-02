@@ -41,6 +41,13 @@ Sistem Backend RESTful API untuk e-commerce yang mendukung manajemen produk, kat
 
 ---
 
+## Login Sebagai Admin
+
+-   email : admin@zedgroup.test
+-   password : admin123
+
+---
+
 ## ⚙️ Requirements
 
 -   PHP >= 8.2
@@ -185,7 +192,7 @@ php artisan serve
 
 ---
 
-## 👨‍💻 Kontributor
+## 👨‍💻 Pengembang
 
 -   Muhammad Rinaldi
 

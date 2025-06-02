@@ -35,7 +35,7 @@ class ProductsController extends Controller
         }
         $validasi = Validator::make($request->all(), [
             'product_name' => 'required|string|max:255',
-            'image_product' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image_product' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'price' => 'required|numeric|min:0',
             'qty' => 'required|integer|min:0',
             'description' => 'nullable|string',
@@ -93,7 +93,7 @@ class ProductsController extends Controller
     
         $validated = Validator::make($request->all(), [
             'product_name' => 'sometimes|string|max:255',
-            'image_product' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'image_product' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             'price' => 'sometimes|numeric|min:0',
             'qty' => 'sometimes|integer|min:0',
             'description' => 'nullable|string',
@@ -169,7 +169,7 @@ class ProductsController extends Controller
         }
         $validasi = Validator::make($request->all(), [
             'gallery_product' => 'required|array',
-            'gallery_product.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'gallery_product.*' => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
         ]);
         if ($validasi->fails()) {
             return ResponseHelper::error($validasi->errors(), 422);

@@ -84,4 +84,19 @@ class AuthController extends Controller
         }
         return ResponseHelper::success($User, 'Users retrieved successfully', 200);
     }
+
+    public function updateAvatar(Request $request, $id) {
+        $user = User::find($id);
+        if (!$user) {
+            return ResponseHelper::error('User not found', 404);
+        }
+        if($request->hasFile('avatar')) {
+            $avatarPath = $request->file('avatar')->store('avatars', 'public');
+        } else {
+            $avatarPath = null; 
+        }
+        $user->avatar = $avatarPath;
+        $user->save();
+        return ResponseHelper::success($user, 'Avatar updated successfully', 200);   
+    }
 }
