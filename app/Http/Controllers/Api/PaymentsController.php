@@ -46,8 +46,14 @@ class PaymentsController extends Controller
             return ResponseHelper::error('Order sudah dibayar', 400);
         }
 
+        if ($PayOrder->payment && $PayOrder->payment->payment_status === 'PENDING') {
+            return ResponseHelper::success([
+                'invoice_url' => $PayOrder->payment->invoice_url,
+                'invoice_id' => $PayOrder->payment->external_id,
+            ], 'Invoice sudah dibuat sebelumnya', 202);
+        }
+
         $order = Order::with(['details', 'user'])->find($request->order_id);
-        
       
             // CEK STOK
             foreach ($order->details as $detail) {
@@ -85,6 +91,8 @@ class PaymentsController extends Controller
                 'payment_status' => 'PENDING',
                 'payment_date' => now(),
                 'external_id' => $invoice['external_id'],
+                'invoice_url' => $invoice['invoice_url'],
+                'invoice_id' => $invoice['id'],
             ]);
     
             $invoiceData = [
@@ -113,6 +121,7 @@ class PaymentsController extends Controller
             $payment = Payment::with('order.details')->where('external_id', $externalId)->first();
             if($payment){
                 $payment->payment_status = $status;
+                $payment->payment_date = now();
                 $payment->save();
             }
             foreach ($payment->order->details as $detail) {
