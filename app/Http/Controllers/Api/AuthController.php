@@ -87,6 +87,12 @@ class AuthController extends Controller
 
     public function updateAvatar(Request $request, $id) {
         $user = User::find($id);
+        $validasi = Validator::make($request->all(), [
+            'avatar' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+        if ($validasi->fails()) {
+            return ResponseHelper::error($validasi->errors(), 422);
+        }
         if (!$user) {
             return ResponseHelper::error('User not found', 404);
         }
@@ -99,6 +105,7 @@ class AuthController extends Controller
         $user->save();
         return ResponseHelper::success($user, 'Avatar updated successfully', 200);   
     }
+    
     
     public function getAuthUser() {
         $user = Auth::guard('sanctum')->user();

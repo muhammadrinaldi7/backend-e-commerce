@@ -84,7 +84,11 @@ class OrdersController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order = Order::with('details.product', 'payment')->find($id);
+        if (!$order) {
+            return ResponseHelper::error('Order not found', 404);
+        }
+        return ResponseHelper::success($order, 'Order retrieved successfully', 200);
     }
 
     /**
