@@ -113,8 +113,14 @@ class PaymentsController extends Controller
 
         $invoiceCallback = new InvoiceCallback($payload);
 
-        // $externalId = $request->external_id;
-        // $status = $request->status;
+        if ($invoiceCallback->getStatus() === 'EXPIRED') {
+            $payment = Payment::where('external_id', $invoiceCallback->getExternalId())->first();
+            if ($payment) {
+                $payment->payment_status = 'EXPIRED';
+                $payment->save();
+            }
+        }
+        
         if($invoiceCallback->getStatus() === 'PAID'){
             $externalId = $invoiceCallback->getExternalId();
             $status = $invoiceCallback->getStatus();
