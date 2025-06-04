@@ -42,12 +42,12 @@ class PaymentsController extends Controller
         }
         $PayOrder = Order::with('payment')->find($request->order_id);
 
-        if ($PayOrder->payment->payment_status === 'PAID') {
+        if ($PayOrder->payment && $PayOrder->payment->payment_status === 'PAID') {
             return ResponseHelper::error('Order sudah dibayar', 400);
         }
 
         if ($PayOrder->payment && $PayOrder->payment->payment_status === 'PENDING') {
-            
+
             return ResponseHelper::success([
                 'invoice_url' => $PayOrder->payment->invoice_url,
                 'invoice_id' => $PayOrder->payment->external_id,
