@@ -70,7 +70,12 @@ class PaymentsController extends Controller
     
             $invoiceApi = new InvoiceApi();
             
-    
+            if ($order->payment->payment_status === 'EXPIRED') {
+                $order->payment->payment_status = 'EXPIRED';
+                $order->payment->save();
+                return ResponseHelper::error('Order sudah expired', 400);
+            }
+
             $params = [
                 'external_id' => 'invoice-' . time(),
                 'description' => 'Pembayaran untuk order#' . $order->id,
@@ -119,6 +124,7 @@ class PaymentsController extends Controller
                 $payment->payment_status = 'EXPIRED';
                 $payment->save();
             }
+            return ResponseHelper::success($payment, 'Pembayaran expired', 200);
         }
         
         if($invoiceCallback->getStatus() === 'PAID'){
